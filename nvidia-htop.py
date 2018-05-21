@@ -85,7 +85,7 @@ for line in processes.stdout.decode().split("\n"):
 format = ("|  %3s %5s %8s   %8s %5s %5s %9s  %-" + str(command_length) + "." + str(command_length) + "s  |")
 
 print(format % (
-    "GPU", "PID", "USER", "GPU MEM", "%MEM", "%CPU", "TIME", "COMMAND"
+    "GPU", "PID", "USER", "GPU MEM", "%CPU", "%MEM", "TIME", "COMMAND"
 ))
 
 for i in range(len(pid)):
