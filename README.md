@@ -13,6 +13,7 @@ A tool for enriching the output of `nvidia-smi`.
 
 ## Example output
 
+    $ nvidia-smi | nvidia-htop.py -l
     Mon May 21 15:06:35 2018
     +-----------------------------------------------------------------------------+
     | NVIDIA-SMI 390.25                 Driver Version: 390.25                    |
