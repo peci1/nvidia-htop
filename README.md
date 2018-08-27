@@ -40,3 +40,7 @@ A tool for enriching the output of `nvidia-smi`.
     |    1 11021 cannotte   10765MiB   114   1.5  python3 ./train.py --flagfile /xxxxxxxx/xxxxxxxx/xxxxxxxx/xxxxxxxxx/xx/xxxxxxxxxxxxxxx                |
     |    2 25544 nevermin   10775MiB   108   2.0  python -m xxxxxxxxxxxxxxxxxxxxxxxxxxxxx                                                               |
     +-----------------------------------------------------------------------------+
+    
+## Screenshot with output coloring
+
+![Screenshot](screen.png)
