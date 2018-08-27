@@ -9,22 +9,31 @@
 #   -l|--command-length [length]     Print longer part of the commandline. If `length'
 #                                    is provided, use it as the commandline length,
 #                                    otherwise print first 100 characters.
+#   -c|--color                       Colorize the output (green - free GPU, yellow - 
+#                                    moderately used GPU, red - fully used GPU)
 ######
 
 import sys
 import os
 import re
 import subprocess
+import argparse
+from termcolor import colored
+
+MEMORY_FREE_RATIO = 0.05
+MEMORY_MODERATE_RATIO = 0.9
+GPU_FREE_RATIO = 0.05
+GPU_MODERATE_RATIO = 0.75
+
+parser = argparse.ArgumentParser()
+parser.add_argument('-l', '--command-length', default=20, const=100, type=int, nargs='?')
+parser.add_argument('-c', '--color', action='store_true')
+
+args = parser.parse_args()
 
 # parse the command length argument
-command_length = 20
-if len(sys.argv) > 1 and (sys.argv[1] == "-l" or sys.argv[1] == "--command-length"):
-    command_length = 100
-if len(sys.argv) > 2:
-    try:
-        command_length = int(sys.argv[2])
-    except ValueError:
-        print("Invalid command length, provide an integer")
+command_length = args.command_length
+color = args.color
 
 # for testing, the stdin can be provided in a file
 fake_stdin_path = os.getenv("FAKE_STDIN_PATH", None)
@@ -35,13 +44,46 @@ else:
     lines = sys.stdin.readlines()
 
 
+def colorize(_lines):
+    for i in range(len(_lines)):
+        line = _lines[i]
+        m = re.match(r"\| ..%\s+[0-9]{2,3}C.*\s([0-9]+)MiB\s+\/\s+([0-9]+)MiB.*\s([0-9]+)%", line)
+        if m is not None:
+            used_mem = int(m.group(1))
+            total_mem = int(m.group(2))
+            gpu_util = int(m.group(3)) / 100.0
+            mem_util = used_mem / float(total_mem)
+
+            is_low = is_moderate = is_high = False
+            is_high = gpu_util >= GPU_MODERATE_RATIO or mem_util >= MEMORY_MODERATE_RATIO
+            if not is_high:
+                is_moderate = gpu_util >= GPU_FREE_RATIO or mem_util >= MEMORY_FREE_RATIO
+
+            if not is_high and not is_moderate:
+                is_free = True
+
+            c = 'red' if is_high else ('yellow' if is_moderate else 'green')
+            _lines[i] = colored(_lines[i], c)
+            _lines[i-1] = colored(_lines[i-1], c)
+
+    return _lines
+
+
+
+lines_to_print = []
 # Copy the utilization upper part verbatim
 for i in range(len(lines)):
     if not lines[i].startswith("| Processes:"):
-        print(lines[i].rstrip())
+        lines_to_print.append(lines[i].rstrip())
     else:
         i += 3
         break
+
+if color:
+    lines_to_print = colorize(lines_to_print)
+
+for line in lines_to_print:
+    print(line)
 
 # Parse the PIDs from the lower part
 gpu_num = []

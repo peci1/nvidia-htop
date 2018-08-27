@@ -10,6 +10,9 @@ A tool for enriching the output of `nvidia-smi`.
       -l|--command-length [length]     Print longer part of the commandline. If `length'
                                        is provided, use it as the commandline length,
                                        otherwise print first 100 characters.
+      -c|--color                       Colorize the output (green - free GPU, yellow - 
+                                       moderately used GPU, red - fully used GPU)
+
 
 ## Example output
 
