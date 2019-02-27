@@ -4,7 +4,7 @@ A tool for enriching the output of `nvidia-smi`.
 
 ## Usage
 
-    nvidia-smi | nvidia-htop.py [-l [length]]
+    nvidia-smi | ./nvidia-htop.py [-l [length]]
       print GPU utilization with usernames and CPU stats for each GPU-utilizing process
 
       -l|--command-length [length]     Print longer part of the commandline. If `length'
@@ -16,7 +16,7 @@ A tool for enriching the output of `nvidia-smi`.
 
 ## Example output
 
-    $ nvidia-smi | nvidia-htop.py -l
+    $ nvidia-smi | ./nvidia-htop.py -l
     Mon May 21 15:06:35 2018
     +-----------------------------------------------------------------------------+
     | NVIDIA-SMI 390.25                 Driver Version: 390.25                    |
