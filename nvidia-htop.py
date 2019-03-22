@@ -96,6 +96,9 @@ time = []
 command = []
 
 while not lines[i].startswith("+--"):
+    if "Not Supported" in lines[i]:
+        i+=1
+        continue
     line = lines[i]
     line = re.split(r'\s+', line)
     gpu_num.append(line[1])
