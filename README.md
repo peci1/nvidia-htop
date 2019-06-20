@@ -2,21 +2,24 @@
 
 A tool for enriching the output of `nvidia-smi`.
 
+# Install
+`pip install .`
+
 ## Usage
 
-    nvidia-smi | ./nvidia-htop.py [-l [length]]
+    nvidia-htop.py [-l [length]]
       print GPU utilization with usernames and CPU stats for each GPU-utilizing process
 
       -l|--command-length [length]     Print longer part of the commandline. If `length'
                                        is provided, use it as the commandline length,
                                        otherwise print first 100 characters.
-      -c|--color                       Colorize the output (green - free GPU, yellow - 
+      -c|--color                       Colorize the output (green - free GPU, yellow -
                                        moderately used GPU, red - fully used GPU)
 
 
 ## Example output
 
-    $ nvidia-smi | ./nvidia-htop.py -l
+    $ nvidia-htop.py -l
     Mon May 21 15:06:35 2018
     +-----------------------------------------------------------------------------+
     | NVIDIA-SMI 390.25                 Driver Version: 390.25                    |
@@ -40,7 +43,7 @@ A tool for enriching the output of `nvidia-smi`.
     |    1 11021 cannotte   10765MiB   114   1.5  python3 ./train.py --flagfile /xxxxxxxx/xxxxxxxx/xxxxxxxx/xxxxxxxxx/xx/xxxxxxxxxxxxxxx                |
     |    2 25544 nevermin   10775MiB   108   2.0  python -m xxxxxxxxxxxxxxxxxxxxxxxxxxxxx                                                               |
     +-----------------------------------------------------------------------------+
-    
+
 ## Screenshot with output coloring
 
 ![Screenshot](screen.png)

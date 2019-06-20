@@ -9,7 +9,7 @@
 #   -l|--command-length [length]     Print longer part of the commandline. If `length'
 #                                    is provided, use it as the commandline length,
 #                                    otherwise print first 100 characters.
-#   -c|--color                       Colorize the output (green - free GPU, yellow - 
+#   -c|--color                       Colorize the output (green - free GPU, yellow -
 #                                    moderately used GPU, red - fully used GPU)
 ######
 
@@ -41,8 +41,10 @@ if fake_stdin_path is not None:
     with open(fake_stdin_path, 'rt') as f:
         lines = f.readlines()
 else:
-    lines = sys.stdin.readlines()
-
+    processes = subprocess.run('nvidia-smi', stdout=subprocess.PIPE)
+    lines_proc = processes.stdout.decode().split("\n")
+    lines = [line + '\n' for line in  lines_proc[:-1]]
+    lines += lines_proc[-1]
 
 def colorize(_lines):
     for i in range(len(_lines)):
