@@ -17,6 +17,7 @@ import sys
 import os
 import re
 import subprocess
+import select
 import argparse
 from termcolor import colored
 
@@ -37,9 +38,15 @@ color = args.color
 
 # for testing, the stdin can be provided in a file
 fake_stdin_path = os.getenv("FAKE_STDIN_PATH", None)
+stdin_lines = []
+if sys.stdin in select.select([sys.stdin], [], [], 0)[0]:
+    stdin_lines = sys.stdin.readlines()
+
 if fake_stdin_path is not None:
     with open(fake_stdin_path, 'rt') as f:
         lines = f.readlines()
+elif stdin_lines:
+    lines = stdin_lines
 else:
     processes = subprocess.run('nvidia-smi', stdout=subprocess.PIPE)
     lines_proc = processes.stdout.decode().split("\n")
