@@ -16,6 +16,7 @@ A tool for enriching the output of `nvidia-smi`.
       -c|--color                       Colorize the output (green - free GPU, yellow -
                                        moderately used GPU, red - fully used GPU)
 
+Note: for backward compatibility, `nvidia-smi | nvidia-htop.py [-l [length]]` is also supported.
 
 ## Example output
 
