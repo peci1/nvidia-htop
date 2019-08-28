@@ -97,65 +97,67 @@ for line in lines_to_print:
 no_running_process = "No running processes found"
 if no_running_process in lines[i]:
     print("|  " + no_running_process + " " * (73 - len(no_running_process)) + "  |")
-else:
-    # Parse the PIDs from the lower part
-    gpu_num = []
-    pid = []
-    gpu_mem = []
-    user = []
-    cpu = []
-    mem = []
-    time = []
-    command = []
+    print(lines[-1])
+    sys.exit()
 
-    while not lines[i].startswith("+--"):
-        if "Not Supported" in lines[i]:
-            i+=1
-            continue
-        line = lines[i]
-        line = re.split(r'\s+', line)
-        gpu_num.append(line[1])
-        pid.append(line[2])
-        gpu_mem.append(line[-3])
-        user.append("")
-        cpu.append("")
-        mem.append("")
-        time.append("")
-        command.append("")
+# Parse the PIDs from the lower part
+gpu_num = []
+pid = []
+gpu_mem = []
+user = []
+cpu = []
+mem = []
+time = []
+command = []
+
+while not lines[i].startswith("+--"):
+    if "Not Supported" in lines[i]:
         i+=1
+        continue
+    line = lines[i]
+    line = re.split(r'\s+', line)
+    gpu_num.append(line[1])
+    pid.append(line[2])
+    gpu_mem.append(line[-3])
+    user.append("")
+    cpu.append("")
+    mem.append("")
+    time.append("")
+    command.append("")
+    i+=1
 
-    # Query the PIDs using ps
-    ps_format = "pid,user,%cpu,%mem,etime,command"
-    processes = subprocess.run(["ps", "-o", ps_format, "-p", ",".join(pid)], stdout=subprocess.PIPE)
+# Query the PIDs using ps
+ps_format = "pid,user,%cpu,%mem,etime,command"
+processes = subprocess.run(["ps", "-o", ps_format, "-p", ",".join(pid)], stdout=subprocess.PIPE)
 
-    # Parse ps output
-    for line in processes.stdout.decode().split("\n"):
-        if line.strip().startswith("PID") or len(line) == 0:
-            continue
-        parts = re.split(r'\s+', line.strip(), 5)
-        idx = pid.index(parts[0])
-        user[idx] = parts[1]
-        cpu[idx] = parts[2]
-        mem[idx] = parts[3]
-        time[idx] = parts[4] if not "-" in parts[4] else parts[4].split("-")[0] + " days"
-        command[idx] = parts[5][0:100]
+# Parse ps output
+for line in processes.stdout.decode().split("\n"):
+    if line.strip().startswith("PID") or len(line) == 0:
+        continue
+    parts = re.split(r'\s+', line.strip(), 5)
+    idx = pid.index(parts[0])
+    user[idx] = parts[1]
+    cpu[idx] = parts[2]
+    mem[idx] = parts[3]
+    time[idx] = parts[4] if not "-" in parts[4] else parts[4].split("-")[0] + " days"
+    command[idx] = parts[5][0:100]
 
-    format = ("|  %3s %5s %8s   %8s %5s %5s %9s  %-" + str(command_length) + "." + str(command_length) + "s  |")
+format = ("|  %3s %5s %8s   %8s %5s %5s %9s  %-" + str(command_length) + "." + str(command_length) + "s  |")
 
+print(format % (
+    "GPU", "PID", "USER", "GPU MEM", "%CPU", "%MEM", "TIME", "COMMAND"
+))
+
+for i in range(len(pid)):
     print(format % (
-        "GPU", "PID", "USER", "GPU MEM", "%CPU", "%MEM", "TIME", "COMMAND"
+        gpu_num[i],
+        pid[i],
+        user[i],
+        gpu_mem[i],
+        cpu[i],
+        mem[i],
+        time[i],
+        command[i]
     ))
-
-    for i in range(len(pid)):
-        print(format % (
-            gpu_num[i],
-            pid[i],
-            user[i],
-            gpu_mem[i],
-            cpu[i],
-            mem[i],
-            time[i],
-            command[i]
-        ))
 
 print(lines[-1])
