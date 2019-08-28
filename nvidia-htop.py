@@ -56,7 +56,7 @@ else:
 def colorize(_lines):
     for i in range(len(_lines)):
         line = _lines[i]
-        m = re.match(r"\| ..%\s+[0-9]{2,3}C.*\s([0-9]+)MiB\s+\/\s+([0-9]+)MiB.*\s([0-9]+)%", line)
+        m = re.match(r"\| (?:N/A|..%)\s+[0-9]{2,3}C.*\s([0-9]+)MiB\s+\/\s+([0-9]+)MiB.*\s([0-9]+)%", line)
         if m is not None:
             used_mem = int(m.group(1))
             total_mem = int(m.group(2))
@@ -93,6 +93,12 @@ if color:
 
 for line in lines_to_print:
     print(line)
+
+no_running_process = "No running processes found"
+if no_running_process in lines[i]:
+    print("|  " + no_running_process + " " * (73 - len(no_running_process)) + "  |")
+    print(lines[-1])
+    sys.exit()
 
 # Parse the PIDs from the lower part
 gpu_num = []
