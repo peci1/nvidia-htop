@@ -135,12 +135,13 @@ for line in processes.stdout.decode().split("\n"):
     if line.strip().startswith("PID") or len(line) == 0:
         continue
     parts = re.split(r'\s+', line.strip(), 5)
-    idx = pid.index(parts[0])
-    user[idx] = parts[1]
-    cpu[idx] = parts[2]
-    mem[idx] = parts[3]
-    time[idx] = parts[4] if not "-" in parts[4] else parts[4].split("-")[0] + " days"
-    command[idx] = parts[5][0:100]
+    # idx = pid.index(parts[0])
+    for idx in filter(lambda i: pid[i]==parts[0], range(len(pid))):
+        user[idx] = parts[1]
+        cpu[idx] = parts[2]
+        mem[idx] = parts[3]
+        time[idx] = parts[4] if not "-" in parts[4] else parts[4].split("-")[0] + " days"
+        command[idx] = parts[5][0:100]
 
 format = ("|  %3s %5s %8s   %8s %5s %5s %9s  %-" + str(command_length) + "." + str(command_length) + "s  |")
 
