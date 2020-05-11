@@ -48,7 +48,11 @@ if fake_stdin_path is not None:
 elif stdin_lines:
     lines = stdin_lines
 else:
-    processes = subprocess.run('nvidia-smi', stdout=subprocess.PIPE)
+    processes = subprocess.run('nvidia-smi', stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    if processes.returncode != 0:
+        print('nvidia-smi exited with error code {}:'.format(processes.returncode))
+        print(processes.stdout.decode() + processes.stderr.decode())
+        sys.exit()
     lines_proc = processes.stdout.decode().split("\n")
     lines = [line + '\n' for line in  lines_proc[:-1]]
     lines += lines_proc[-1]
