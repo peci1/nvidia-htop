@@ -3,7 +3,7 @@
 A tool for enriching the output of `nvidia-smi`.
 
 # Install
-`pip install .`
+`pip3 install .`
 
 ## Usage
 
