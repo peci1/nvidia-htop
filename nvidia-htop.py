@@ -111,14 +111,20 @@ mem = []
 time = []
 command = []
 
+print("0: " + os.getenv("LANG", "NONE"))
+print("1: {} {}".format(i, lines[i]))
 while not lines[i].startswith("+--"):
+    print("2: {} {}".format(i, lines[i]))
     if "Not Supported" in lines[i]:
         i += 1
         continue
     line = lines[i]
     line = re.split(r'\s+', line)
+    print("3: {}".format(line))
+    print("4: {}".format(line[2]))
     gpu_num.append(line[1])
     pid.append(line[2])
+    print("5: {}".format(pid))
     gpu_mem.append(line[-3])
     user.append("")
     cpu.append("")
