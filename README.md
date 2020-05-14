@@ -18,6 +18,8 @@ A tool for enriching the output of `nvidia-smi`.
 
 Note: for backward compatibility, `nvidia-smi | nvidia-htop.py [-l [length]]` is also supported.
 
+Note: running inside a container (docker, singularity, ...), `nvidia-smi` can only see processes running in the container.
+
 ## Example output
 
     $ nvidia-htop.py -l
