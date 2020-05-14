@@ -29,12 +29,15 @@ GPU_MODERATE_RATIO = 0.75
 parser = argparse.ArgumentParser()
 parser.add_argument('-l', '--command-length', default=20, const=100, type=int, nargs='?')
 parser.add_argument('-c', '--color', action='store_true')
+# only for testing
+parser.add_argument('-p', '--fake-ps', help="The list of processes to use instead of real output of `ps`")
 
 args = parser.parse_args()
 
 # parse the command length argument
 command_length = args.command_length
 color = args.color
+fake_ps = args.fake_ps
 
 # for testing, the stdin can be provided in a file
 fake_stdin_path = os.getenv("FAKE_STDIN_PATH", None)
@@ -48,12 +51,12 @@ if fake_stdin_path is not None:
 elif stdin_lines:
     lines = stdin_lines
 else:
-    processes = subprocess.run('nvidia-smi', stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-    if processes.returncode != 0:
-        print('nvidia-smi exited with error code {}:'.format(processes.returncode))
-        print(processes.stdout.decode() + processes.stderr.decode())
+    ps_call = subprocess.run('nvidia-smi', stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    if ps_call.returncode != 0:
+        print('nvidia-smi exited with error code {}:'.format(ps_call.returncode))
+        print(ps_call.stdout.decode() + ps_call.stderr.decode())
         sys.exit()
-    lines_proc = processes.stdout.decode().split("\n")
+    lines_proc = ps_call.stdout.decode().split("\n")
     lines = [line + '\n' for line in lines_proc[:-1]]
     lines += lines_proc[-1]
 
@@ -127,12 +130,17 @@ while not lines[i].startswith("+--"):
     command.append("")
     i += 1
 
-# Query the PIDs using ps
-ps_format = "pid,user,%cpu,%mem,etime,command"
-processes = subprocess.run(["ps", "-o", ps_format, "-p", ",".join(pid)], stdout=subprocess.PIPE)
+if fake_ps is None:
+    # Query the PIDs using ps
+    ps_format = "pid,user,%cpu,%mem,etime,command"
+    ps_call = subprocess.run(["ps", "-o", ps_format, "-p", ",".join(pid)], stdout=subprocess.PIPE)
+    processes = ps_call.stdout.decode().split("\n")
+else:
+    with open(fake_ps, 'r') as f:
+        processes = f.readlines()
 
 # Parse ps output
-for line in processes.stdout.decode().split("\n"):
+for line in processes:
     if line.strip().startswith("PID") or len(line) == 0:
         continue
     parts = re.split(r'\s+', line.strip(), 5)
