@@ -54,33 +54,30 @@ else:
         print(processes.stdout.decode() + processes.stderr.decode())
         sys.exit()
     lines_proc = processes.stdout.decode().split("\n")
-    lines = [line + '\n' for line in  lines_proc[:-1]]
+    lines = [line + '\n' for line in lines_proc[:-1]]
     lines += lines_proc[-1]
 
+
 def colorize(_lines):
-    for i in range(len(_lines)):
-        line = _lines[i]
-        m = re.match(r"\| (?:N/A|..%)\s+[0-9]{2,3}C.*\s([0-9]+)MiB\s+\/\s+([0-9]+)MiB.*\s([0-9]+)%", line)
+    for j in range(len(_lines)):
+        line = _lines[j]
+        m = re.match(r"\| (?:N/A|..%)\s+[0-9]{2,3}C.*\s([0-9]+)MiB\s+/\s+([0-9]+)MiB.*\s([0-9]+)%", line)
         if m is not None:
             used_mem = int(m.group(1))
             total_mem = int(m.group(2))
             gpu_util = int(m.group(3)) / 100.0
             mem_util = used_mem / float(total_mem)
 
-            is_low = is_moderate = is_high = False
+            is_moderate = False
             is_high = gpu_util >= GPU_MODERATE_RATIO or mem_util >= MEMORY_MODERATE_RATIO
             if not is_high:
                 is_moderate = gpu_util >= GPU_FREE_RATIO or mem_util >= MEMORY_FREE_RATIO
 
-            if not is_high and not is_moderate:
-                is_free = True
-
             c = 'red' if is_high else ('yellow' if is_moderate else 'green')
-            _lines[i] = colored(_lines[i], c)
-            _lines[i-1] = colored(_lines[i-1], c)
+            _lines[j] = colored(_lines[j], c)
+            _lines[j-1] = colored(_lines[j-1], c)
 
     return _lines
-
 
 
 lines_to_print = []
@@ -116,7 +113,7 @@ command = []
 
 while not lines[i].startswith("+--"):
     if "Not Supported" in lines[i]:
-        i+=1
+        i += 1
         continue
     line = lines[i]
     line = re.split(r'\s+', line)
@@ -128,7 +125,7 @@ while not lines[i].startswith("+--"):
     mem.append("")
     time.append("")
     command.append("")
-    i+=1
+    i += 1
 
 # Query the PIDs using ps
 ps_format = "pid,user,%cpu,%mem,etime,command"
@@ -140,11 +137,11 @@ for line in processes.stdout.decode().split("\n"):
         continue
     parts = re.split(r'\s+', line.strip(), 5)
     # idx = pid.index(parts[0])
-    for idx in filter(lambda i: pid[i]==parts[0], range(len(pid))):
+    for idx in filter(lambda p: pid[p] == parts[0], range(len(pid))):
         user[idx] = parts[1]
         cpu[idx] = parts[2]
         mem[idx] = parts[3]
-        time[idx] = parts[4] if not "-" in parts[4] else parts[4].split("-")[0] + " days"
+        time[idx] = parts[4] if "-" not in parts[4] else parts[4].split("-")[0] + " days"
         command[idx] = parts[5][0:100]
 
 format = ("|  %3s %5s %8s   %8s %5s %5s %9s  %-" + str(command_length) + "." + str(command_length) + "s  |")
