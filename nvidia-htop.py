@@ -3,7 +3,7 @@
 #######
 # USAGE
 #
-# nvidia-smi | nvidia-htop.py [-l [length]]
+# [nvidia-smi | ] nvidia-htop.py [-l [length]]
 #   print GPU utilization with usernames and CPU stats for each GPU-utilizing process
 #
 #   -l|--command-length [length]     Print longer part of the commandline. If `length'
@@ -99,8 +99,11 @@ for line in lines_to_print:
     print(line)
 
 no_running_process = "No running processes found"
-if no_running_process in lines[i]:
-    print("|  " + no_running_process + " " * (73 - len(no_running_process)) + "  |")
+if no_running_process in lines[i] or lines[i].startswith("+--"):
+    print("| " + no_running_process + " " * (73 - len(no_running_process)) + "   |")
+    # Issue #9, running inside docker and seeing no processes
+    if lines[i].startswith("+--"):
+        print("| If you're running in a container, you'll only see processes running inside. |")
     print(lines[-1])
     sys.exit()
 
