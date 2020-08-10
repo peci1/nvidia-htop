@@ -84,12 +84,18 @@ def colorize(_lines):
 
 
 lines_to_print = []
+is_new_format = False
 # Copy the utilization upper part verbatim
 for i in range(len(lines)):
     if not lines[i].startswith("| Processes:"):
         lines_to_print.append(lines[i].rstrip())
     else:
-        i += 3
+        while not lines[i].startswith("|===="):
+            m = re.search(r'GPU\s*GI\s*CI', lines[i])
+            if m is not None:
+                is_new_format = True
+            i += 1
+        i += 1
         break
 
 if color:
@@ -117,15 +123,19 @@ mem = []
 time = []
 command = []
 
+gpu_num_idx = 1
+pid_idx = 2 if not is_new_format else 4
+gpu_mem_idx = -3
+
 while not lines[i].startswith("+--"):
     if "Not Supported" in lines[i]:
         i += 1
         continue
     line = lines[i]
     line = re.split(r'\s+', line)
-    gpu_num.append(line[1])
-    pid.append(line[2])
-    gpu_mem.append(line[-3])
+    gpu_num.append(line[gpu_num_idx])
+    pid.append(line[pid_idx])
+    gpu_mem.append(line[gpu_mem_idx])
     user.append("")
     cpu.append("")
     mem.append("")

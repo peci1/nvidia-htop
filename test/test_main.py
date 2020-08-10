@@ -16,6 +16,9 @@ class TestNvidiaHtop(unittest.TestCase):
     def test_with_processes(self):
         self.do_test('FAKE_STDIN', 'DESIRED_STDOUT')
 
+    def test_new_format(self):
+        self.do_test('FAKE_STDIN_NEW_FORMAT', 'DESIRED_STDOUT_NEW_FORMAT')
+
     def test_with_processes_color(self):
         self.do_test('FAKE_STDIN', 'DESIRED_STDOUT_COLOR', call_args=["-c"])
 
