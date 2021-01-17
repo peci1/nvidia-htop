@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.0.2
+
+- No change, just re-release.
+
 ## 1.0.1
 
 - Released on Jan 17 2021.
