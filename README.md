@@ -5,7 +5,10 @@ A tool for enriching the output of `nvidia-smi`.
 ![CI](https://github.com/peci1/nvidia-htop/workflows/CI/badge.svg)
 
 # Install
-`pip3 install .`
+
+```bash
+pip install git+https://github.com/peci1/nvidia-htop.git
+```
 
 ## Usage
 
