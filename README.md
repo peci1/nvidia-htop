@@ -3,9 +3,14 @@
 A tool for enriching the output of `nvidia-smi`.
 
 ![CI](https://github.com/peci1/nvidia-htop/workflows/CI/badge.svg)
+[![PyPI version](https://badge.fury.io/py/nvidia-htop.svg)](https://badge.fury.io/py/nvidia-htop)
 
 # Install
-`pip3 install .`
+`pip3 install nvidia-htop`
+
+**Yes, this tool has been on PyPi since 2021! Enjoy the super-easy way to install it.**
+
+
 
 ## Usage
 
