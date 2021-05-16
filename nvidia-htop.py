@@ -163,7 +163,7 @@ for line in processes:
         cpu[idx] = parts[2]
         mem[idx] = parts[3]
         time[idx] = parts[4] if "-" not in parts[4] else parts[4].split("-")[0] + " days"
-        command[idx] = parts[5][0:100]
+        command[idx] = parts[5]
 
 format = ("|  %3s %5s %8s   %8s %5s %5s %9s  %-" + str(command_length) + "." + str(command_length) + "s  |")
 

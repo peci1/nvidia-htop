@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.0.3
+
+- Fixed outputting commands longer than 100 characters.
+
 ## 1.0.2
 
 - No change, just re-release.
