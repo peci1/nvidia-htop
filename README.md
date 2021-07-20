@@ -27,6 +27,8 @@ Note: for backward compatibility, `nvidia-smi | nvidia-htop.py [-l [length]]` is
 
 Note: running inside a container (docker, singularity, ...), `nvidia-smi` can only see processes running in the container.
 
+Note: To periodically check the output of nvidia-htop, use the `watch` utility: `watch nividia-htop.py`. To get colored output, you have to pass option `-c` to both `watch` and `nvidia-htop`, e.g. `watch -c nvidia-htop.py -c`.
+
 ## Example output
 
     $ nvidia-htop.py -l
