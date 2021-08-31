@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.0.5
+
+- Maintenance release.
+
+## 1.0.4
+
+- Fixed output when there are processed with PIDs >= 1M.
+
 ## 1.0.3
 
 - Fixed outputting commands longer than 100 characters.
