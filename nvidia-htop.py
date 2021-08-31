@@ -101,11 +101,13 @@ for i in range(len(lines)):
 if color:
     lines_to_print = colorize(lines_to_print)
 
-for line in lines_to_print:
+# we print all but the last line which is the +---+ separator
+for line in lines_to_print[:-1]:
     print(line)
 
 no_running_process = "No running processes found"
 if no_running_process in lines[i] or lines[i].startswith("+--"):
+    print(lines[-1].strip())
     print("| " + no_running_process + " " * (73 - len(no_running_process)) + "   |")
     # Issue #9, running inside docker and seeing no processes
     if lines[i].startswith("+--"):
@@ -165,15 +167,16 @@ for line in processes:
         time[idx] = parts[4] if "-" not in parts[4] else parts[4].split("-")[0] + " days"
         command[idx] = parts[5]
 
-max_pid_length = max([len(str(x)) for x in pid])
-if max_pid_length >= 6:
-    command_length -= (max_pid_length - 6)
+max_pid_length = max(5, max([len(x) for x in pid]))
+format = ("|  %3s %" + str(max_pid_length) + "s %8s   %8s %5s %5s %9s  %-" + str(command_length) + "." + str(command_length) + "s  |")
 
-format = ("|  %3s %" + str(max_pid_length) + "s %8s   %8s %5s %5s %9s  %-" + str(command_length) + "." + str(command_length) + "s |")
-
-print(format % (
+line = format % (
     "GPU", "PID", "USER", "GPU MEM", "%CPU", "%MEM", "TIME", "COMMAND"
-))
+)
+
+print("+" + ("-" * (len(line) - 2)) + "+")
+
+print(line)
 
 for i in range(len(pid)):
     print(format % (
@@ -187,4 +190,4 @@ for i in range(len(pid)):
         command[i]
     ))
 
-print(lines[-1])
+print("+" + ("-" * (len(line) - 2)) + "+")
