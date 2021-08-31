@@ -165,7 +165,11 @@ for line in processes:
         time[idx] = parts[4] if "-" not in parts[4] else parts[4].split("-")[0] + " days"
         command[idx] = parts[5]
 
-format = ("|  %3s %5s %8s   %8s %5s %5s %9s  %-" + str(command_length) + "." + str(command_length) + "s  |")
+max_pid_length = max([len(str(x)) for x in pid])
+if max_pid_length >= 6:
+    command_length -= (max_pid_length - 6)
+
+format = ("|  %3s %" + str(max_pid_length) + "s %8s   %8s %5s %5s %9s  %-" + str(command_length) + "." + str(command_length) + "s |")
 
 print(format % (
     "GPU", "PID", "USER", "GPU MEM", "%CPU", "%MEM", "TIME", "COMMAND"
