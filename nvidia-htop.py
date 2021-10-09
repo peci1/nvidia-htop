@@ -167,7 +167,8 @@ for line in processes:
         time[idx] = parts[4] if "-" not in parts[4] else parts[4].split("-")[0] + " days"
         command[idx] = parts[5]
 
-max_pid_length = max(5, max([len(x) for x in pid]))
+#max_pid_length = max(5, max([len(x) for x in pid]))
+max_pid_length = max(5, len(open('/proc/sys/kernel/pid_max', 'r').read().strip()))
 format = ("|  %3s %" + str(max_pid_length) + "s %8s   %8s %5s %5s %9s  %-" + str(command_length) + "." + str(command_length) + "s  |")
 
 line = format % (

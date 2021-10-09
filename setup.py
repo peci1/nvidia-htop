@@ -16,7 +16,7 @@ setup(name='nvidia-htop',
       url='https://github.com/peci1/nvidia-htop',
       author='Martin Pecka',
       author_email='peci1@seznam.cz',
-      scripts=['nvidia-htop.py'],
+      scripts=['nvidia-htop.py', 'nvidia-htop_merge_user.py'],
       install_requires=[
         "termcolor"
       ],
