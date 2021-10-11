@@ -20,6 +20,7 @@ import subprocess
 import select
 import argparse
 from termcolor import colored
+import copy
 
 MEMORY_FREE_RATIO = 0.05
 MEMORY_MODERATE_RATIO = 0.9
@@ -29,8 +30,10 @@ GPU_MODERATE_RATIO = 0.75
 parser = argparse.ArgumentParser()
 parser.add_argument('-l', '--command-length', default=20, const=100, type=int, nargs='?')
 parser.add_argument('-c', '--color', action='store_true')
+parser.add_argument('-m', '--MIG-M', action='store_false', help="Show 'MIG M.' value.")
 # only for testing
 parser.add_argument('-p', '--fake-ps', help="The list of processes to use instead of real output of `ps`")
+ 
 
 args = parser.parse_args()
 
@@ -38,6 +41,7 @@ args = parser.parse_args()
 command_length = args.command_length
 color = args.color
 fake_ps = args.fake_ps
+show_MIG_M = args.MIG_M
 
 # for testing, the stdin can be provided in a file
 fake_stdin_path = os.getenv("FAKE_STDIN_PATH", None)
@@ -116,21 +120,31 @@ if no_running_process in lines[i] or lines[i].startswith("+--"):
     sys.exit()
 
 # Parse the PIDs from the lower part
-gpu_num = []
-pid = []
-gpu_mem = []
-user = []
-cpu = []
-mem = []
-time = []
-command = []
+base_user_profile = {
+    "num_process" = [],
+    "gpu_num" = [],
+    "gpu_mem" = [],
+    "cpu" = [],
+    "mem" = [],
+    "time" = [],
+    "command" = [],
+}
+
+user_dict = {}
+
 
 gpu_num_idx = 1
 pid_idx = 2 if not is_new_format else 4
 gpu_mem_idx = -3
 
 while not lines[i].startswith("+--"):
+    if "MIG M." in lines[i]:
+        i += 1
+        continue
     if "Not Supported" in lines[i]:
+        i += 1
+        continue
+    if "N/A" in lines[i]:
         i += 1
         continue
     line = lines[i]
@@ -138,11 +152,6 @@ while not lines[i].startswith("+--"):
     gpu_num.append(line[gpu_num_idx])
     pid.append(line[pid_idx])
     gpu_mem.append(line[gpu_mem_idx])
-    user.append("")
-    cpu.append("")
-    mem.append("")
-    time.append("")
-    command.append("")
     i += 1
 
 if fake_ps is None:
@@ -172,7 +181,7 @@ max_pid_length = max(5, open('/proc/sys/kernel/pid_max', 'r').read().strip())
 format = ("|  %3s %" + str(max_pid_length) + "s %8s   %8s %5s %5s %9s  %-" + str(command_length) + "." + str(command_length) + "s  |")
 
 line = format % (
-    "USER", "GPU", "GPU MEM", "%CPU", "%MEM", "TIME", "COMMAND"
+    "USER", "PROCESSES", "GPU", "GPU MEM", "%CPU", "%MEM", "TIME", "COMMAND"
 )
 
 print("+" + ("-" * (len(line) - 2)) + "+")
