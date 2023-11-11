@@ -1,3 +1,4 @@
+import os
 import subprocess
 import unittest
 
@@ -7,7 +8,9 @@ class TestNvidiaHtop(unittest.TestCase):
         if call_args is None:
             call_args = list()
         with open(stdin, 'r') as fake_stdin:
-            test_call = subprocess.run(["../nvidia-htop.py", "--fake-ps", fake_ps] + call_args, stdin=fake_stdin, stdout=subprocess.PIPE)
+            env = os.environ.copy()
+            env['FORCE_COLOR'] = '1'
+            test_call = subprocess.run(["../nvidia-htop.py", "--fake-ps", fake_ps] + call_args, stdin=fake_stdin, stdout=subprocess.PIPE, env=env)
             self.assertEqual(test_call.returncode, 0)
             with open(stdout, 'r') as desired_stdout:
                 out = desired_stdout.read()
