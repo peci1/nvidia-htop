@@ -19,6 +19,7 @@ import re
 import subprocess
 import select
 import argparse
+from itertools import takewhile
 from termcolor import colored
 
 MEMORY_FREE_RATIO = 0.05
@@ -62,6 +63,8 @@ else:
 
 
 def colorize(_lines):
+    # Index of the first content line of the current cell in the nvidia-smi output.
+    start_idx = 0
     for j in range(len(_lines)):
         line = _lines[j]
         m = re.match(r"\| (?:N/A|..%)\s+[0-9]{2,3}C.*\s([0-9]+)MiB\s+/\s+([0-9]+)MiB.*\s([0-9]+)%", line)
@@ -77,8 +80,12 @@ def colorize(_lines):
                 is_moderate = gpu_util >= GPU_FREE_RATIO or mem_util >= MEMORY_FREE_RATIO
 
             c = 'red' if is_high else ('yellow' if is_moderate else 'green')
-            _lines[j] = colored(_lines[j], c)
-            _lines[j-1] = colored(_lines[j-1], c)
+            # Color all lines from the `start_idx`, until we find a separator.
+            for k in takewhile(lambda k: not lines[k].startswith("+----"), range(start_idx, len(_lines))):
+                _lines[k] = colored(_lines[k], c)
+        elif line.startswith("|====") or line.startswith("+----"):
+            # If we find a separator, either the end of the header, or a separator between two GPUs, update the `start_idx`.
+            start_idx = j+1
 
     return _lines
 
