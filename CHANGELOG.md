@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.0.6
+
+- Fixed coloring output. Thanks @tomix1024 !
+
 ## 1.0.5
 
 - Maintenance release.

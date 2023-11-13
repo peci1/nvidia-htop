@@ -6,21 +6,17 @@ on:
 
 jobs:
   build-n-publish:
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@master
-      - name: Set up Python 3.9
-        uses: actions/setup-python@v1
-        with:
-          python-version: 3.9
+      - uses: actions/checkout@v4
       - name: Install wheel
         run: python3 -m pip install wheel
       - name: Build a binary wheel and a source tarball
         run: python3 setup.py sdist bdist_wheel
       - name: Publish distribution 📦 to Test PyPI
-        uses: pypa/gh-action-pypi-publish@master
+        uses: pypa/gh-action-pypi-publish@release/v1
         with:
           password: ${{ secrets.TEST_PYPI_API_TOKEN }}
-          repository_url: https://test.pypi.org/legacy/
-          skip_existing: true
+          repository-url: https://test.pypi.org/legacy/
+          skip-existing: true
           verbose: true
