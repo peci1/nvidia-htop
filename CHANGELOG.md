@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.0.7
+
+- Added CLI argument `--user` to filter processes by selected users.
+
 ## 1.0.6
 
 - Fixed coloring output. Thanks @tomix1024 !
