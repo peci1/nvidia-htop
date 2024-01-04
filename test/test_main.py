@@ -22,6 +22,9 @@ class TestNvidiaHtop(unittest.TestCase):
     def test_new_format(self):
         self.do_test('FAKE_STDIN_NEW_FORMAT', 'DESIRED_STDOUT_NEW_FORMAT')
 
+    def test_new_format_users(self):
+        self.do_test('FAKE_STDIN_NEW_FORMAT', 'DESIRED_STDOUT_NEW_FORMAT_USERS', call_args=["-u", "root,test"])
+
     def test_long_pids(self):
         self.do_test('FAKE_STDIN_LONG_PIDS', 'DESIRED_STDOUT_LONG_PIDS', fake_ps='FAKE_PS_LONG_PIDS')
 

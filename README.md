@@ -22,6 +22,8 @@ A tool for enriching the output of `nvidia-smi`.
                                        otherwise print first 100 characters.
       -c|--color                       Colorize the output (green - free GPU, yellow -
                                        moderately used GPU, red - fully used GPU)
+      -u|--user USER[,USER]            Limit the list of processes to selected users
+                                       (comma-separated).
 
 Note: for backward compatibility, `nvidia-smi | nvidia-htop.py [-l [length]]` is also supported.
 
