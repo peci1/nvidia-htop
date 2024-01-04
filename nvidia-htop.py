@@ -30,6 +30,7 @@ GPU_MODERATE_RATIO = 0.75
 parser = argparse.ArgumentParser()
 parser.add_argument('-l', '--command-length', default=20, const=100, type=int, nargs='?')
 parser.add_argument('-c', '--color', action='store_true')
+parser.add_argument('-u', '--user', default='', help="Limit the list of processes to selected users (comma-separated)")
 # only for testing
 parser.add_argument('-p', '--fake-ps', help="The list of processes to use instead of real output of `ps`")
 
@@ -39,6 +40,7 @@ args = parser.parse_args()
 command_length = args.command_length
 color = args.color
 fake_ps = args.fake_ps
+users = set(args.user.split(',')) if len(args.user) > 0 else None
 
 # for testing, the stdin can be provided in a file
 fake_stdin_path = os.getenv("FAKE_STDIN_PATH", None)
@@ -132,6 +134,17 @@ mem = []
 time = []
 command = []
 
+fields = (
+    gpu_num,
+    pid,
+    gpu_mem,
+    user,
+    cpu,
+    mem,
+    time,
+    command,
+)
+
 gpu_num_idx = 1
 pid_idx = 2 if not is_new_format else 4
 gpu_mem_idx = -3
@@ -167,12 +180,24 @@ for line in processes:
         continue
     parts = re.split(r'\s+', line.strip(), 5)
     # idx = pid.index(parts[0])
+    to_delete = []  # If the command is limited to selected users, we need to delete the other lines
     for idx in filter(lambda p: pid[p] == parts[0], range(len(pid))):
+        if users is not None and parts[1] not in users:
+            to_delete.append(idx)
+            continue
         user[idx] = parts[1]
         cpu[idx] = parts[2]
         mem[idx] = parts[3]
         time[idx] = parts[4] if "-" not in parts[4] else parts[4].split("-")[0] + " days"
         command[idx] = parts[5]
+    # Delete lines not corresponding to the selected users (if some are selected)
+    for idx in reversed(sorted(to_delete)):
+        for field in fields:
+            del field[idx]
+
+if len(pid) == 0:
+    print("| " + no_running_process + " " * (73 - len(no_running_process)) + "   |")
+    sys.exit()
 
 max_pid_length = max(5, max([len(x) for x in pid]))
 format = ("|  %3s %" + str(max_pid_length) + "s %8s   %8s %5s %5s %9s  %-" + str(command_length) + "." + str(command_length) + "s  |")
