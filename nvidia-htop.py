@@ -195,6 +195,10 @@ for line in processes:
         for field in fields:
             del field[idx]
 
+if len(pid) == 0:
+    print("| " + no_running_process + " " * (73 - len(no_running_process)) + "   |")
+    sys.exit()
+
 max_pid_length = max(5, max([len(x) for x in pid]))
 format = ("|  %3s %" + str(max_pid_length) + "s %8s   %8s %5s %5s %9s  %-" + str(command_length) + "." + str(command_length) + "s  |")
 
