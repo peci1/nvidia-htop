@@ -31,6 +31,7 @@ parser = argparse.ArgumentParser()
 parser.add_argument('-l', '--command-length', default=20, const=100, type=int, nargs='?')
 parser.add_argument('-c', '--color', action='store_true')
 parser.add_argument('-u', '--user', default='', help="Limit the list of processes to selected users (comma-separated)")
+parser.add_argument('-i', '--id', default='', help="Limit the command to selected GPU IDs (comma-separated)")
 # only for testing
 parser.add_argument('-p', '--fake-ps', help="The list of processes to use instead of real output of `ps`")
 
@@ -54,7 +55,10 @@ if fake_stdin_path is not None:
 elif stdin_lines:
     lines = stdin_lines
 else:
-    ps_call = subprocess.run('nvidia-smi', stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    nvidiasmi_args = []
+    if args.id is not None:
+        nvidiasmi_args = ['-i', args.id]
+    ps_call = subprocess.run(['nvidia-smi'] + nvidiasmi_args, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     if ps_call.returncode != 0:
         print('nvidia-smi exited with error code {}:'.format(ps_call.returncode))
         print(ps_call.stdout.decode() + ps_call.stderr.decode())
