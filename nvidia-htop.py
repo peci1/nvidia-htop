@@ -56,7 +56,7 @@ elif stdin_lines:
     lines = stdin_lines
 else:
     nvidiasmi_args = []
-    if args.id is not None:
+    if len(args.id) > 0:
         nvidiasmi_args = ['-i', args.id]
     ps_call = subprocess.run(['nvidia-smi'] + nvidiasmi_args, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     if ps_call.returncode != 0:
