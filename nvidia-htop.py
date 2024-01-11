@@ -3,7 +3,7 @@
 #######
 # USAGE
 #
-# [nvidia-smi | ] nvidia-htop.py [-l [length]]
+# [nvidia-smi | ] nvidia-htop.py [-l [length]] [-i ID]
 #   print GPU utilization with usernames and CPU stats for each GPU-utilizing process
 #
 #   -l|--command-length [length]     Print longer part of the commandline. If `length'
@@ -11,6 +11,7 @@
 #                                    otherwise print first 100 characters.
 #   -c|--color                       Colorize the output (green - free GPU, yellow -
 #                                    moderately used GPU, red - fully used GPU)
+#   -i|--id ID                       Limit the command to selected GPU IDs (comma-separated)
 ######
 
 import sys
