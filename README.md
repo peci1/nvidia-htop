@@ -24,6 +24,7 @@ A tool for enriching the output of `nvidia-smi`.
                                        moderately used GPU, red - fully used GPU)
       -u|--user USER[,USER]            Limit the list of processes to selected users
                                        (comma-separated).
+      -i|--id ID[,ID]                  Limit the command to selected GPU IDs (comma-separated).
 
 Note: for backward compatibility, `nvidia-smi | nvidia-htop.py [-l [length]]` is also supported.
 
