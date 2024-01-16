@@ -10,8 +10,8 @@
 #                                    is provided, use it as the commandline length,
 #                                    otherwise print first 100 characters.
 #   -c|--color                       Colorize the output (green - free GPU, yellow -
-#                                    moderately used GPU, red - fully used GPU)
-#   -i|--id ID                       Limit the command to selected GPU IDs (comma-separated)
+#                                    moderately used GPU, red - fully used GPU).
+#   -i|--id ID[,ID[,ID...]]          Limit the command to selected GPU IDs (comma-separated).
 ######
 
 import sys
@@ -55,15 +55,18 @@ if fake_stdin_path is not None:
         lines = f.readlines()
 elif stdin_lines:
     lines = stdin_lines
+    if len(args.id) > 0:
+        print('nvidia-htop argument -i/--id cannot be used when nvidia-smi output is being piped into it. To filter the'
+              ' shown GPUs, pass the -i argument to the nvidia-smi call instead.', file=sys.stderr)
 else:
     nvidiasmi_args = []
     if len(args.id) > 0:
         nvidiasmi_args = ['-i', args.id]
     ps_call = subprocess.run(['nvidia-smi'] + nvidiasmi_args, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     if ps_call.returncode != 0:
-        print('nvidia-smi exited with error code {}:'.format(ps_call.returncode))
-        print(ps_call.stdout.decode() + ps_call.stderr.decode())
-        sys.exit()
+        print('nvidia-smi exited with error code {}:'.format(ps_call.returncode), file=sys.stderr)
+        print(ps_call.stdout.decode() + ps_call.stderr.decode(), file=sys.stderr)
+        sys.exit(ps_call.returncode)
     lines_proc = ps_call.stdout.decode().split("\n")
     lines = [line + '\n' for line in lines_proc[:-1]]
     lines += lines_proc[-1]
