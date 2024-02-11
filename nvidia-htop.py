@@ -84,12 +84,13 @@ def add_meters(_lines):
         mem_util = used_mem / float(total_mem)
         # Uses empty space underneath gpu & mem util stats for meter placement.
         meter_space = re.split(r"\|(?!$)", _lines[i+1])
-        gpu_meter_space = (len(meter_space[1])-4)
-        mem_meter_space = (len(meter_space[2])-4)
+        gpu_util_space, mig, _ = re.split(r"([^ |]+ \|)", meter_space[-1], maxsplit=1)
+        gpu_meter_space = len(gpu_util_space)-4
+        mem_meter_space = len(meter_space[2])-4
         # Fill gpu and mem util meters proportional to reported utilization
         gpu_meter = "|"*round(gpu_util*gpu_meter_space) + " "*round((1-gpu_util)*gpu_meter_space)
         mem_meter = "|"*round(mem_util*mem_meter_space) + " "*round((1-mem_util)*mem_meter_space)
-        meter_space[1] = f" [{gpu_meter}] "
+        meter_space[-1] = f" [{gpu_meter}] {mig}"
         meter_space[2] = f" [{mem_meter}] "
         _lines[i+1] = '|'.join(meter_space)
             
