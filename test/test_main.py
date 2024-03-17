@@ -50,6 +50,22 @@ class TestNvidiaHtop(unittest.TestCase):
     def test_no_processes_docker(self):
         self.do_test('FAKE_STDIN_NO_PROCESSES_DOCKER', 'DESIRED_STDOUT_NO_PROCESSES_DOCKER')
 
+    def test_with_meters(self):
+        self.do_test('FAKE_STDIN_NEW_FORMAT', 'DESIRED_STDOUT_NEW_FORMAT_METER', call_args=["-m"])
+
+    def test_with_meters_color(self):
+        self.do_test('FAKE_STDIN_NEW_FORMAT', 'DESIRED_STDOUT_NEW_FORMAT_METER_COLOR', call_args=["-m", "-c"])
+    
+    def test_with_meters_long_pids(self):
+        self.do_test('FAKE_STDIN_LONG_PIDS', 'DESIRED_STDOUT_NEW_FORMAT_METER_LONG_PIDS', call_args=["-m"], fake_ps='FAKE_PS_LONG_PIDS')
+
+    def test_with_meters_long(self):
+        self.do_test('FAKE_STDIN_NEW_FORMAT', 'DESIRED_STDOUT_NEW_FORMAT_METER_L', call_args=["-m", "-l"])
+    
+    def test_with_meters_very_long(self):
+        self.do_test('FAKE_STDIN_NEW_FORMAT', 'DESIRED_STDOUT_NEW_FORMAT_METER_L150', call_args=["-m", "-l", "150"])
+
+
 
 if __name__ == '__main__':
     unittest.main()
