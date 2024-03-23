@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.2.0
+- Added CLI argument `--meter` to show graphical utilization meters.
+
 ## 1.1.0
 
 - Added CLI argument `--id` to filter the processed GPUs (it is passed to `nvidia-smi`).
