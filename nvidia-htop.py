@@ -31,6 +31,7 @@ GPU_MODERATE_RATIO = 0.75
 parser = argparse.ArgumentParser()
 parser.add_argument('-l', '--command-length', default=20, const=100, type=int, nargs='?')
 parser.add_argument('-c', '--color', action='store_true')
+parser.add_argument('-m', '--meter', action='store_true', help="Shows meters for GPU and VRAM utilization")
 parser.add_argument('-u', '--user', default='', help="Limit the list of processes to selected users (comma-separated)")
 parser.add_argument('-i', '--id', default='', help="Limit the command to selected GPU IDs (comma-separated)")
 # only for testing
@@ -41,6 +42,7 @@ args = parser.parse_args()
 # parse the command length argument
 command_length = args.command_length
 color = args.color
+meter = args.meter
 fake_ps = args.fake_ps
 users = set(args.user.split(',')) if len(args.user) > 0 else None
 
@@ -71,8 +73,31 @@ else:
     lines = [line + '\n' for line in lines_proc[:-1]]
     lines += lines_proc[-1]
 
+def add_meters(_lines):
+    pattern = re.compile(r"\| (?:N/A|..%)\s+[0-9]{2,3}C.*\s([0-9]+)MiB\s+/\s+([0-9]+)MiB.*\s([0-9]+)%")
+    gpu_util_lines = list(filter(lambda tup: pattern.match(tup[1]), enumerate(_lines)))
+    for i, line in gpu_util_lines:
+        m = pattern.match(line)
+        used_mem = int(m.group(1))
+        total_mem = int(m.group(2))
+        gpu_util = int(m.group(3)) / 100.0
+        mem_util = used_mem / float(total_mem)
+        # Uses empty space underneath gpu & mem util stats for meter placement.
+        meter_space = re.split(r"\|(?!$)", _lines[i+1])
+        gpu_util_space, mig, _ = re.split(r"([^ |]+ \|)", meter_space[-1], maxsplit=1)
+        gpu_meter_space = len(gpu_util_space)-4
+        mem_meter_space = len(meter_space[2])-4
+        # Fill gpu and mem util meters proportional to reported utilization
+        gpu_meter = "|"*round(gpu_util*gpu_meter_space) + " "*round((1-gpu_util)*gpu_meter_space)
+        mem_meter = "|"*round(mem_util*mem_meter_space) + " "*round((1-mem_util)*mem_meter_space)
+        meter_space[-1] = f" [{gpu_meter}] {mig}"
+        meter_space[2] = f" [{mem_meter}] "
+        _lines[i+1] = '|'.join(meter_space)
+            
+    return _lines
 
 def colorize(_lines):
+    _lines = add_meters(_lines) if meter else _lines
     # Index of the first content line of the current cell in the nvidia-smi output.
     start_idx = 0
     for j in range(len(_lines)):
@@ -117,6 +142,9 @@ for i in range(len(lines)):
 
 if color:
     lines_to_print = colorize(lines_to_print)
+
+elif meter:
+    lines_to_print = add_meters(lines_to_print)
 
 # we print all but the last line which is the +---+ separator
 for line in lines_to_print[:-1]:
